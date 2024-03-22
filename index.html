@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Loan Prepayment Calculator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    form {
+        display: grid;
+        grid-gap: 10px;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    input[type="number"], input[type="range"] {
+        width: 100%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    .result {
+        margin-top: 20px;
+    }
+
+    .result p {
+        margin-bottom: 5px;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h2>Home Loan Prepayment Calculator</h2>
+    <form id="calculatorForm">
+        <label for="outstandingPrincipal">Outstanding Principal:</label>
+        <input type="number" id="outstandingPrincipal" required><br>
+
+        <label for="yearlyInterestRate">Yearly Interest Rate (%):</label>
+        <input type="number" id="yearlyInterestRate" required>
+        <input type="range" id="interestRateRange" min="0" max="20" step="0.1" value="5"><br>
+
+        <label for="totalTenure">Total Tenure (in years):</label>
+        <input type="number" id="totalTenure" required>
+        <input type="range" id="tenureRange" min="1" max="30" step="1" value="15"><br>
+
+        <label for="newInterestRate">New Interest Rate (%):</label>
+        <input type="number" id="newInterestRate" required>
+
+        <label for="newTenure">New Tenure (in years):</label>
+        <input type="number" id="newTenure" required><br>
+
+        <button type="button" onclick="calculate()">Calculate</button>
+    </form>
+
+    <div class="result">
+        <h2>Result</h2>
+        <p>Total Savings on Transfer: <span id="totalSavings"></span></p>
+        <p>Existing EMI: <span id="existingEMI"></span></p>
+        <p>New EMI: <span id="newEMI"></span></p>
+        <p>Monthly Savings: <span id="monthlySavings"></span></p>
+    </div>
+</div>
+
+<script>
+    document.getElementById("interestRateRange").addEventListener("input", function() {
+        document.getElementById("yearlyInterestRate").value = this.value;
+    });
+
+    document.getElementById("tenureRange").addEventListener("input", function() {
+        document.getElementById("totalTenure").value = this.value;
+    });
+
+    function calculate() {
+        var outstandingPrincipal = parseFloat(document.getElementById("outstandingPrincipal").value);
+        var yearlyInterestRate = parseFloat(document.getElementById("yearlyInterestRate").value) / 100;
+        var totalTenure = parseFloat(document.getElementById("totalTenure").value);
+        var newInterestRate = parseFloat(document.getElementById("newInterestRate").value) / 100;
+        var newTenure = parseFloat(document.getElementById("newTenure").value);
+
+        var existingEMI = calculateEMI(outstandingPrincipal, yearlyInterestRate, totalTenure);
+        var newEMI = calculateEMI(outstandingPrincipal, newInterestRate, newTenure);
+        var totalSavings = Math.round((existingEMI - newEMI) * 12 * newTenure);
+        var monthlySavings = Math.round(existingEMI - newEMI);
+
+        document.getElementById("totalSavings").textContent = totalSavings;
+        document.getElementById("existingEMI").textContent = existingEMI;
+        document.getElementById("newEMI").textContent = newEMI;
+        document.getElementById("monthlySavings").textContent = monthlySavings;
+    }
+
+    function calculateEMI(principal, rate, tenure) {
+        var monthlyRate = rate / 12;
+        var months = tenure * 12;
+        var emi = principal * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1);
+        return Math.round(emi);
+    }
+</script>
+</body>
+</html>
